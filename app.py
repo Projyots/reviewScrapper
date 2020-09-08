@@ -8,20 +8,18 @@ import pymongo
 app = Flask(__name__)  # initialising the flask app with the name 'app'
 
 
-
-
-@app.route('/',methods=['POST','GET']) # route with allowed methods as POST and GET
+@app.route('/', methods=['POST', 'GET'])  # route with allowed methods as POST and GET
 def index():
     if request.method == 'POST':
-        searchString = request.form['content'].replace(" ","") # obtaining the search string entered in the form
+        searchString = request.form['content'].replace(" ", "")  # obtaining the search string entered in the form
         try:
             dbConn = pymongo.MongoClient("mongodb://localhost:27017/")  # opening a connection to Mongo
-            db = dbConn['crawlerDB'] # connecting to the database called crawlerDB
+            db = dbConn['crawlerDB']  # connecting to the database called crawlerDB
             reviews = db[searchString].find({}) # searching the collection with the name same as the keyword
-            if reviews.count() > 0: # if there is a collection with searched keyword and it has records in it
-                return render_template('results.html',reviews=reviews) # show the results to user
+            if reviews.count() > 0:  # if there is a collection with searched keyword and it has records in it
+                return render_template('results.html', reviews=reviews)  # show the results to user
             else:
-                flipkart_url = "https://www.flipkart.com/search?q=" + searchString # preparing the URL to search the product on flipkart
+                flipkart_url = "https://www.flipkart.com/search?q=" + searchString  # preparing the URL to search the product on flipkart
                 uClient = uReq(flipkart_url) # requesting the webpage from the internet
                 flipkartPage = uClient.read() # reading the webpage
                 uClient.close() # closing the connection to the web server
